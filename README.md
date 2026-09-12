@@ -13,6 +13,11 @@ understand rather than hide behind a framework.
   directly responding to NANDA's own [IEEE workshop call](https://www.linkedin.com/feed/update/urn:li:activity:7503833494121287680/)
   for work on "identity, trust, reputation, decentralized architectures."
 
+Together with its companion project, [`nanda-quorum-orchestrator`](https://github.com/Varshini-arsh/nanda-quorum-orchestrator)
+(signed, quorum-verified task execution across independent agents), these
+two repos cover all four infrastructure gaps NANDA names: **Discovery**,
+**Identity/CA**, **Attestation**, and **Orchestration**.
+
 ## Part 1 — What it does
 
 - Each agent generates its own Ed25519 keypair (no central certificate
@@ -107,3 +112,6 @@ directly, then runs the impersonation attack and shows it fails everywhere.
   verification, and invocation all speak the same protocol NANDA bridges.
 - Add expiry/revocation to AgentFacts and rater keys so compromised
   credentials can be rotated without breaking trust for everyone else.
+- Feed these reputation scores into `nanda-quorum-orchestrator`'s vote
+  tally, so a trusted agent's vote outweighs several low-reputation ones
+  instead of one-agent-one-vote.
