@@ -1,32 +1,32 @@
 # Mini AgentFacts Registry & Federation
 
-A small, working prototype of infrastructure gaps Project NANDA (MIT Media
-Lab) names for the "Internet of AI Agents" — built in two parts, each
-tackling a different piece, at a scale I could implement and fully
-understand rather than hide behind a framework.
+A small, working prototype of core infrastructure for AI agent networks —
+built in two parts, each tackling a different piece, at a scale I could
+implement and fully understand rather than hide behind a framework.
 
 - **Part 1 — discovery & attestation** (single node): agents self-sign
   capability documents; a registry verifies and indexes them.
 - **Part 2 — decentralization & portable reputation** (multi-node): the
   same primitives extended across a gossiping mesh of registries, plus
-  a signed, tamper-evident reputation ledger with impersonation defense —
-  directly responding to NANDA's own [IEEE workshop call](https://www.linkedin.com/feed/update/urn:li:activity:7503833494121287680/)
-  for work on "identity, trust, reputation, decentralized architectures."
+  a signed, tamper-evident reputation ledger with impersonation defense.
 
-Together with its companion project, [`nanda-quorum-orchestrator`](https://github.com/Varshini-arsh/nanda-quorum-orchestrator)
-(signed, quorum-verified task execution across independent agents), these
-two repos cover all four infrastructure gaps NANDA names: **Discovery**,
-**Identity/CA**, **Attestation**, and **Orchestration**.
+Together with its companion projects, [`agent-quorum-orchestrator`](https://github.com/Varshini-arsh/agent-quorum-orchestrator)
+(signed, quorum-verified task execution across independent agents) and
+[`agent-zk-reputation`](https://github.com/Varshini-arsh/agent-zk-reputation)
+(zero-knowledge proof that a reputation score clears a threshold, without
+revealing it), these three repos cover the core infrastructure any
+decentralized agent network needs: **discovery**, **identity**,
+**attestation**, **orchestration**, and **privacy**.
 
 ## Part 1 — What it does
 
 - Each agent generates its own Ed25519 keypair (no central certificate
   authority) and publishes a signed **AgentFacts** document describing its
-  capabilities and endpoint — mirroring NANDA's signed, schema-validated
-  capability documents.
+  capabilities and endpoint — a verifiable-credential-style capability
+  document an agent issues about itself.
 - A minimal registry (`registry.py`, FastAPI) lets agents **register**
   themselves and lets other agents **discover** them by capability — a
-  single-node stand-in for the federated NANDA Index ("DNS for agents").
+  single-node stand-in for a federated "DNS for agents."
 - The registry independently **verifies** every document's signature
   against its own embedded public key before indexing it, and can
   re-verify on demand. `demo.py` shows this catching a tampered entry
@@ -34,10 +34,12 @@ two repos cover all four infrastructure gaps NANDA names: **Discovery**,
   prevent (a compromised registry replica silently rewriting an agent's
   endpoint to redirect traffic).
 
-NANDA's stated choke points are DNS (discovery), CA (identity), Orchestration,
-and Attestation. Part 1 is a deliberately small, legible cut through two of
-them — self-sovereign identity (agents sign their own facts, no CA) and
-discovery-by-capability.
+Any agent network needs an answer to four questions: how do you find an
+agent (discovery), how do you know who it is (identity), how do you know
+its claims are genuine (attestation), and how do you coordinate work
+across many of them (orchestration). Part 1 is a deliberately small,
+legible cut through the first two of those — self-sovereign identity
+(agents sign their own facts, no CA) and discovery-by-capability.
 
 ## Part 1 — Run it
 
@@ -73,9 +75,9 @@ processes are cleaned up automatically when it finishes.
 
 Part 1's registry is a single node — a real deployment would have no such
 central point. Part 2 (`federated_registry.py`, `reputation.py`,
-`federation_orchestrator.py`) fixes that and adds a second NANDA-relevant
-capability: **portable reputation**, one of the trust primitives called
-out in NANDA's roadmap and its IEEE workshop CFP.
+`federation_orchestrator.py`) fixes that and adds a second capability:
+**portable reputation**, one of the trust primitives any open agent
+network needs once agents start relying on each other's work.
 
 - **Decentralization**: a small mesh of registry nodes gossip AgentFacts
   and reputation receipts to each other (one-hop, full-mesh). Register an
@@ -109,9 +111,9 @@ directly, then runs the impersonation attack and shows it fails everywhere.
 - Replace one-hop full-mesh gossip with a real anti-entropy protocol so the
   mesh scales past a handful of nodes.
 - Swap `/invoke`'s toy handlers for real MCP tool calls, so discovery,
-  verification, and invocation all speak the same protocol NANDA bridges.
+  verification, and invocation all speak the same protocol.
 - Add expiry/revocation to AgentFacts and rater keys so compromised
   credentials can be rotated without breaking trust for everyone else.
-- Feed these reputation scores into `nanda-quorum-orchestrator`'s vote
+- Feed these reputation scores into `agent-quorum-orchestrator`'s vote
   tally, so a trusted agent's vote outweighs several low-reputation ones
   instead of one-agent-one-vote.

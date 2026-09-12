@@ -1,8 +1,8 @@
 """
 Boots the registry and three independent agent servers as real, separate
 processes, then performs a live discover -> verify -> invoke round trip
-over actual HTTP -- the full NANDA-style flow, in real time, with no
-in-process shortcuts.
+over actual HTTP -- the full discovery, identity, and invocation flow,
+in real time, with no in-process shortcuts.
 
 Run with: python orchestrator.py
 """
@@ -83,8 +83,8 @@ def main() -> None:
 
         print(f"\n--- invoking '{target['name']}' at its own advertised endpoint: {target['endpoint']} ---")
         sample_text = (
-            "NANDA is building the internet of AI agents so they can discover, "
-            "verify, and invoke each other automatically."
+            "This network lets independent agents discover, verify, and "
+            "invoke each other automatically."
         )
         result = httpx.post(target["endpoint"], json={"text": sample_text}, timeout=5)
         print(result.json())

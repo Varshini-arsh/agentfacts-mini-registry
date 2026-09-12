@@ -5,8 +5,8 @@ source of truth -- this is the piece project 1 deliberately left as
 agent (or rate one) through *any* node in the mesh and it becomes visible
 from every other node.
 
-Also adds a defense NANDA's own workshop call names explicitly:
-agent-to-agent identity/trust security. Rater identities are pinned to
+Also adds a defense against agent-to-agent identity spoofing: rater
+identities are pinned to
 their public key on first sight (trust-on-first-use). If someone later
 tries to submit a rating claiming to be an already-known rater but signed
 with a *different* key -- an impersonation attempt -- every node rejects
@@ -30,7 +30,7 @@ NODE_NAME = os.environ.get("NODE_NAME", "node")
 NODE_PORT = int(os.environ.get("NODE_PORT", "9100"))
 PEER_URLS = [p for p in os.environ.get("PEER_URLS", "").split(",") if p]
 
-app = FastAPI(title=f"Federated NANDA-style Registry [{NODE_NAME}]")
+app = FastAPI(title=f"Federated Agent Registry [{NODE_NAME}]")
 
 # Local view of the network. In a real federation this would be a proper
 # CRDT / anti-entropy store; an in-memory dict is enough to demonstrate

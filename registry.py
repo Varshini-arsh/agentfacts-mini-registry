@@ -1,8 +1,9 @@
 """
-A minimal, single-node stand-in for the NANDA Index: a discovery service
-that agents register themselves into, and that other agents can query by
-capability. Real NANDA federates many such registries across institutions;
-this demonstrates the same discovery + attestation contract on one node.
+A minimal, single-node discovery service ("DNS for agents") that agents
+register themselves into, and that other agents can query by capability.
+A production deployment would federate many such registries across
+institutions; this demonstrates the same discovery + attestation contract
+on one node.
 
 Run with: uvicorn registry:app --reload --port 9000
 """
@@ -14,7 +15,7 @@ from fastapi import FastAPI, HTTPException
 
 from agentfacts import VerificationError, verify_agentfacts
 
-app = FastAPI(title="Mini NANDA-style Agent Registry")
+app = FastAPI(title="Mini Agent Registry")
 
 # In-memory index: agent_id -> AgentFacts document.
 _INDEX: dict[str, dict[str, Any]] = {}

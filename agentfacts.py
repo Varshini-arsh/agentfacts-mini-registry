@@ -1,12 +1,13 @@
 """
-AgentFacts: a minimal implementation of NANDA-style signed capability
+AgentFacts: a minimal implementation of self-signed agent capability
 documents. Each agent generates its own Ed25519 keypair, describes itself
 in a JSON-LD-ish document, and signs that document with its private key.
 
 No central certificate authority is involved -- trust comes from the
 signature verifying against the public key embedded in the document
 itself, plus (optionally) out-of-band confirmation of that public key.
-This mirrors NANDA's "attestation without a central CA" design goal.
+This is attestation without a central CA: identity that agents assert
+and prove for themselves.
 """
 from __future__ import annotations
 
