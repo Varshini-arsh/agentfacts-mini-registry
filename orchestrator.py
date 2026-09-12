@@ -79,15 +79,18 @@ def main() -> None:
 
         target = candidates[0]
         print(f"\n--- verifying '{target['name']}' against the registry's stored copy ---")
-        print(httpx.get(f"{REGISTRY_URL}/agents/{target['id']}/verify").json())
+        verify_result = httpx.get(f"{REGISTRY_URL}/agents/{target['id']}/verify").json()
+        print(verify_result)
+        assert verify_result["valid"] is True, "a freshly self-registered agent must verify as valid"
 
         print(f"\n--- invoking '{target['name']}' at its own advertised endpoint: {target['endpoint']} ---")
         sample_text = (
             "This network lets independent agents discover, verify, and "
             "invoke each other automatically."
         )
-        result = httpx.post(target["endpoint"], json={"text": sample_text}, timeout=5)
-        print(result.json())
+        result = httpx.post(target["endpoint"], json={"text": sample_text}, timeout=5).json()
+        print(result)
+        assert "result" in result, "invoking the agent's real endpoint must return its computed result"
 
         print("\nDone -- this was a real network round trip across independently running processes.")
     finally:

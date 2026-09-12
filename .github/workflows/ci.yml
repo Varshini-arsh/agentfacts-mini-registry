@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  demos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+
+      - name: Part 1 -- single-process registry demo
+        run: python demo.py
+
+      - name: Part 1 -- live multi-process discover/verify/invoke
+        run: python orchestrator.py
+
+      - name: Part 2 -- federated registry, reputation, impersonation defense
+        run: python federation_orchestrator.py

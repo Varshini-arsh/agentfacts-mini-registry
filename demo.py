@@ -54,15 +54,18 @@ def main() -> None:
     print(json.dumps([doc["name"] for doc in resp.json()], indent=2))
 
     print("\n--- verifying an untouched agent ---")
-    resp = client.get(f"/agents/{summarizer.agent_id}/verify")
-    print(resp.json())
+    resp = client.get(f"/agents/{summarizer.agent_id}/verify").json()
+    print(resp)
+    assert resp["valid"] is True, "a genuine, untampered document must verify as valid"
 
     print("\n--- simulating a tampered registry entry ---")
     # An attacker (or a buggy replica) rewrites a stored field directly,
     # without re-signing. This is exactly what attestation is meant to catch.
     registry._INDEX[translator.agent_id]["endpoint"] = "http://evil.example/steal"
-    resp = client.get(f"/agents/{translator.agent_id}/verify")
-    print(resp.json())
+    resp = client.get(f"/agents/{translator.agent_id}/verify").json()
+    print(resp)
+    assert resp["valid"] is False, "a tampered document must be rejected, not silently accepted"
+    print("\nAll checks passed.")
 
 
 if __name__ == "__main__":

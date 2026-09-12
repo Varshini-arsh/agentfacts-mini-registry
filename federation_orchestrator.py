@@ -115,12 +115,16 @@ def main() -> None:
         print(f"\n--- reading reputation from {NODES[2]['name']}, which received neither rating directly ---")
         rep = httpx.get(f"{node_c}/agents/fed-summarizer-01/reputation").json()
         print(rep)
+        assert rep["ratings"] == 2, "both ratings should have gossiped to the third node"
+        assert rep["average"] == 4.5, "average of 5 and 4 should be 4.5"
+        assert rep["chain_valid"] is True
 
         print("\n--- attacker tries to impersonate 'rater-alice' with a fabricated 1-star review ---")
         attacker = Rater("rater-alice", Ed25519PrivateKey.generate())  # same name, different (stolen?) key
         forged = attacker.rate("fed-summarizer-01", 1, "TERRIBLE (fake review)")
         r3 = httpx.post("http://127.0.0.1:9101/agents/fed-summarizer-01/reputation", json=forged)
         print(f"attacker -> node-B: {r3.status_code} {r3.text}")
+        assert r3.status_code == 409, "impersonation attempt must be rejected with a conflict"
 
         print("\n--- confirming the forged review did not land anywhere ---")
         rep_after = httpx.get("http://127.0.0.1:9100/agents/fed-summarizer-01/reputation").json()
